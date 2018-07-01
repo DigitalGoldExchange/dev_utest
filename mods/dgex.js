@@ -1,6 +1,23 @@
 /**
  * Copyright DGE
  */
+
+
+
+const timeTravel = function (time) {
+    return new Promise((resolve, reject) => {
+        web3.currentProvider.sendAsync({
+            jsonrpc: "2.0",
+            method: "evm_increaseTime",
+            params: [time], // 86400 is num seconds in day
+            id: new Date().getTime()
+        }, (err, result) => {
+            if(err){ return reject(err) }
+            return resolve(result)
+        });
+    })
+};
+
 module.exports = {
     core: {
 
@@ -39,21 +56,21 @@ module.exports = {
                     cex2,
                     newOwner
                 ] = accounts;
-                
+
                 before('setup contract ', async function() {
                     tmtgFinal = await self._artifact.new({from: owner});
                 })
                 ///**
-                  
-                 
+
+
                // -------------------------------------------기능&단위 테스트-----------------------------------------------------------------------
                 logger.debug(":: 기능&단위 테스트 Start ::========================================");
-                describe('basic function & unit test', ()=>{
+                /*describe('basic function & unit test', ()=>{
 
-                
+
                     it('0. name check', async function(){
                         var name = "The Midas Touch Gold";
-                        logger.debug("0. name : " + assert.equal(name, await tmtgFinal.name()));  
+                        logger.debug("0. name : " + assert.equal(name, await tmtgFinal.name()));
                     })
                     it('1. superInvestor check', async function(){
                         assert.equal(owner, await tmtgFinal.owner());
@@ -65,8 +82,8 @@ module.exports = {
                         logger.debug("1. superInvestor(rejected) : " + await tmtgFinal.setSuperInvestor(superInvestor2,{from:anonymous}).should.be.rejected);
                         logger.debug("1. superInvesto(rejected) : " + await tmtgFinal.delSuperInvestor(superInvestor,{from:anonymous}).should.be.rejected);
                     })
-                
-                    it('2. totalSupply check', async function(){    
+
+                    it('2. totalSupply check', async function(){
                         const totalSupply = new BigNumber(1e+28);
                         logger.debug("2. totalSupply : " + (await tmtgFinal.balanceOf(owner)).should.be.bignumber.equal(await tmtgFinal.totalSupply()));
                         logger.debug("2. totalSupply : " + (await tmtgFinal.balanceOf(owner)).should.be.bignumber.equal(totalSupply));
@@ -76,7 +93,7 @@ module.exports = {
                         logger.debug("3. regiInvestor(rejected) : " + (await tmtgFinal.regiInvestor(investor, {from:superInvestor}).should.be.rejected));
                         logger.debug("3. investorList : " + (await tmtgFinal.investorList(investor).should.be.fulfilled));
                         logger.debug("3. investorList : " + (await tmtgFinal.investorList(anonymous).should.be.fulfilled));
-                        
+
                     })
                     it('4. delInvestor check', async function(){
                         logger.debug("4. delInvestor : " + (await tmtgFinal.delInvestor(investor,{from:owner}).should.be.fulfilled));
@@ -132,7 +149,7 @@ module.exports = {
                         logger.debug("10. setCEx(rejected) : " + (await tmtgFinal.setCEx(cex1, {from:superInvestor2}).should.be.rejected));
                         logger.debug("10. delCEx(rejected) : " + (await tmtgFinal.delCEx(cex1,{from:superInvestor2}).should.be.rejected));
                     })
-                    
+
                     it('11. paused check', async function(){
                         logger.debug("11. pause(rejected) : " + (await tmtgFinal.pause({from:superInvestor}).should.be.rejected));
                         logger.debug("11. pause : " + (await tmtgFinal.pause({from:owner}).should.be.fulfilled));
@@ -142,7 +159,7 @@ module.exports = {
                         logger.debug("11. unpause : " + (await tmtgFinal.unpause({from:owner}).should.be.fulfilled));
                         logger.debug("11. paused : " + (await tmtgFinal.paused()));
                     })
-                    
+
                     it('12. balanceOf check', async function(){
                         logger.debug("12. balanceOf : " + await tmtgFinal.balanceOf(owner));
                     })
@@ -159,7 +176,7 @@ module.exports = {
                         logger.debug("13. searchInvestor : " + await tmtgFinal.searchInvestor(investor2));
                         logger.debug("13. searchInvestor : " + await tmtgFinal.searchInvestor(investor));
                     })
-                    
+
                     it('14. pause check', async function(){
                         logger.debug("14. pause(rejected) : " + (await tmtgFinal.pause({from:superInvestor}).should.be.rejected));
                         logger.debug("14. pause : " + (await tmtgFinal.pause({from:owner}).should.be.fulfilled));
@@ -183,7 +200,7 @@ module.exports = {
 
                     it('16. owner check', async function(){
                         logger.debug("16. owner : " + (await tmtgFinal.owner()));
-                        logger.debug("16. owner : " + assert.equal(await tmtgFinal.owner(), owner)); 
+                        logger.debug("16. owner : " + assert.equal(await tmtgFinal.owner(), owner));
                     })
 
                     it('17. deleteFromBlacklist', async function(){
@@ -226,7 +243,7 @@ module.exports = {
                         logger.debug("21. transferOwnership(rejected) : " + await tmtgFinal.transferOwnership(newOwner,{from:superInvestor}).should.be.rejected);
                         logger.debug("21. transferOwnership(rejected) : " + await tmtgFinal.transferOwnership(newOwner,{from:cex1}).should.be.rejected);
                     })
-                    
+
                     it('22. setCEx', async function(){
                         logger.debug("22. CEx : " + (await tmtgFinal.CEx(cex1)));
                         logger.debug("22. setCEx : " + (await tmtgFinal.setCEx(cex1, {from:owner}).should.be.fulfilled));
@@ -256,21 +273,21 @@ module.exports = {
 
                         logger.debug("24. setSuperInvestor(rejected) : " + await tmtgFinal.setSuperInvestor(superInvestor2,{from:superInvestor}).should.be.rejected);
                     })
-                    
+
                     it('25. delSuperInvestor', async function(){
                         logger.debug("25. superInvestor : " + await tmtgFinal.superInvestor(superInvestor2));
                         logger.debug("25. delSuperInvestor : " + await tmtgFinal.delSuperInvestor(superInvestor2,{from:owner}).should.be.fulfilled);
                         logger.debug("25. superInvestor : " + await tmtgFinal.superInvestor(superInvestor2));
-                        
+
                         logger.debug("25. delSuperInvestor(rejected) : " + await tmtgFinal.delSuperInvestor(superInvestor2,{from:superInvestor}).should.be.rejected);
                     })
-                    
+
                     it('26. setOpeningTime', async function(){
                         logger.debug("26. openingTime : " + await tmtgFinal.openingTime());
                         logger.debug("26. setOpeningTime : " + await tmtgFinal.setOpeningTime());
                         logger.debug("26. openingTime : " + await tmtgFinal.openingTime());
                         logger.debug("26. checkTime : " + await tmtgFinal.checkTime());
-                        
+
                     })
 
                     it('27. burn', async function(){
@@ -291,11 +308,11 @@ module.exports = {
                         logger.debug("28. burnFrom : " + await tmtgFinal.burnFrom(cex1, 1000000000000,{from:owner}).should.be.fulfilled);
                         logger.debug("28. balanceOf : " + await tmtgFinal.balanceOf(cex1));
                     })
-                    
+
                     it('29. checkTime', async function(){
                         logger.debug("29. checkTime : " + await tmtgFinal.checkTime());
                     })
-                    
+
                     it('30. approve', async function(){
                         logger.debug("30. setSuperInvestor : " + await tmtgFinal.setSuperInvestor(superInvestor2,{from:owner}).should.be.fulfilled);
                         logger.debug("30. superInvestor : " + await tmtgFinal.superInvestor(superInvestor2));
@@ -311,8 +328,8 @@ module.exports = {
                         logger.debug("31. transfer(rejected) : " + await tmtgFinal.transfer(100001).should.be.rejected);
                         logger.debug("31. transfer : " + await tmtgFinal.transfer(10000).should.be.rejected);
                         logger.debug("31. balanceOf : " + await tmtgFinal.balanceOf(anonymous2));
-                    }) 
-                    
+                    })
+
                     it('32. transferFrom', async function(){
                         logger.debug("32. transfer : " + await tmtgFinal.transfer(anonymous, 100000000,{from:owner}));
                         logger.debug("32. transfer : " + await tmtgFinal.transfer(superInvestor2, 100000000,{from:owner}));
@@ -323,8 +340,8 @@ module.exports = {
                         logger.debug("32. approve : " + await tmtgFinal.approve(anonymous2, 100100000,{from:superInvestor2}).should.be.rejected);
                         logger.debug("32. tranferFrom : " + await tmtgFinal.transferFrom(anonymous,superInvestor2,100000000,{from:anonymous2}).should.be.fulfilled);
                         logger.debug("32. tranferFrom : " + await tmtgFinal.transferFrom(superInvestor2,anonymous,100100000,{from:superInvestor2}).should.be.rejected);
-                    })   
-                    
+                    })
+
                     it('33. getLimitPeriod',async function(){
                         logger.debug("33.checkTime : " + await tmtgFinal.checkTime());
                         logger.debug("33. getLimitPeriod : " + await tmtgFinal.getLimitPeriod());
@@ -333,15 +350,15 @@ module.exports = {
                         logger.debug("End : ========================================");
                     })
                 })
-               // */
+               //
                 // 기능 테스트 완료------------------------------------------------------------------------------------------------------------------------
-                
+
             // 권한 : owner / superInvestor / CEx(거래소) / investor / anonymous
-            // 0. approve 
-            // 1. transfer 
+            // 0. approve
+            // 1. transfer
             // 2. tranferFrom
             // 3. 토큰락 테스트
-                
+
             describe('0. Approve test', ()=> {
                 it("0-1. 서킷브레이커 작동시, Approve는 작동하지 않는다. " , async function() {
                     logger.debug(":: 0-1.함수 테스트) Approve START : ========================================");
@@ -350,9 +367,9 @@ module.exports = {
                     logger.debug(":: 0-1  approve : " +  await tmtgFinal.approve(anonymous,10000,{from:owner}).should.be.rejected);
                     logger.debug(":: 0-1. unpaused : " + await tmtgFinal.unpause());
                     logger.debug(":: 0-1. paused : " + await tmtgFinal.paused());
-                    
+
                 })
-                
+
                 it("0-2. 보내는 사람, 받는사람이 블랙리스트일 경우, Approve는 작동하지 않는다. " ,async function() {
                     logger.debug(":: 0-2. ownerCheck : " + assert.equal(await tmtgFinal.owner(), owner));
                     logger.debug(":: 0-2. transfer : " + await tmtgFinal.transfer(anonymous,100000,{from:owner}));
@@ -373,11 +390,11 @@ module.exports = {
                     const superInvestorAmount = new BigNumber(1e+23);
                     const investorAmount = new BigNumber(1e+22);
                     const rest = new BigNumber(9e+18);
-                    const rest = new BigNumber(9e+19);
-                    
+
+
                     logger.debug(":: 0-3. transfer : " + await tmtgFinal.transfer(superInvestor,superInvestorAmount,{from:owner}));
                     logger.debug(":: 0-3. setSuperInvestor : " + await tmtgFinal.setSuperInvestor(superInvestor,{from:owner}).should.be.fulfilled);
-                    logger.debug(":: 0-3. superInvestor : " + await tmtgFinal.superInvestor(superInvestor)); 
+                    logger.debug(":: 0-3. superInvestor : " + await tmtgFinal.superInvestor(superInvestor));
                     logger.debug(":: 0-3. balanceOf : " + await tmtgFinal.balanceOf(superInvestor));
                     logger.debug(":: 0-3. investorList : " + await tmtgFinal.investorList(anonymous2));
                     logger.debug(":: 0-3. searchInvestor : " + await tmtgFinal.searchInvestor(anonymous2));
@@ -448,7 +465,7 @@ module.exports = {
             //     it("2-1. 서킷브레이커 작동시, transferFrom는 작동하지 않는다. " ,async function() {
             //         //logger.debug("::2-1. pause : " + (await tmtgFinal.pause({from:owner}).should.be.fulfilled));
             //         //logger.debug("::2-1. paused : " + await tmtgFinal.paused());
-                    
+
             //     })
 
             //     it("2-2. investor인 경우, transferFrom은 해당 _newLimit만큼(approve된 만큼)  보낼 수 있다. " ,async function() {
@@ -471,15 +488,125 @@ module.exports = {
             //     })
             // })
 
-            // describe('3. getLimitPeriod test', () => {
-            
-            // })
 
-            // describe('4. tokenLock test', () => {
-            
-            // })
+*/
+            describe('4. tokenLock test', () => {
+                it('4-1', async function(){
+                    let openingTime = Math.floor(new Date().getTime() / 1000)
+                    let monthInSeconds = 2.678e+6;
+                    let amt = new BigNumber(1e+25);
+                    let amt2 = new BigNumber(5e+24);
+                    let amt3 = new BigNumber(5e+23);
 
-            }) 
+                    logger.debug("0. transfer : " + await amt.should.be.bignumber.equal(amt, await new BigNumber(1e+24)));
+                    logger.debug("1. check time : " + await tmtgFinal.checkTime());
+                    logger.debug("2. get limit period : " + await tmtgFinal.getLimitPeriod());
+
+                    logger.debug("3. Owner transfers to superInvestor 10M TMTG : " + await tmtgFinal.transfer(superInvestor, amt, {from: owner}));
+                    logger.debug("Owner sets superinvestor : " + await tmtgFinal.setSuperInvestor(superInvestor, {from: owner}));
+                    logger.debug("superInvestor transfers to investor 5M TMTG : " + await tmtgFinal.transfer(investor, amt2, {from: superInvestor}));
+                    logger.debug("superInvestor transfers to investor2 5M TMTG : " + await tmtgFinal.transfer(investor2, amt2, {from: superInvestor}));
+                    logger.debug("investor transfers to anyone 5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone 5M TMTG right away : " + await tmtgFinal.approve(investor, amt2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Aug
+
+                    logger.debug("4. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 1));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Sep
+
+                    logger.debug("5. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 2));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+
+                    timeTravel(monthInSeconds); // Oct
+
+                    logger.debug("6. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 3));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Nov
+
+                    logger.debug("7. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 4));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Dec
+
+                    logger.debug("8. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 5));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Jan
+
+                    logger.debug("9. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 6));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Feb
+
+                    logger.debug("10. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 7));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Mar
+
+                    logger.debug("11. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 8));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // Apr
+
+                    logger.debug("12. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 9));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+                    timeTravel(monthInSeconds); // May
+
+                    logger.debug("13. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 10));
+                    logger.debug("investor transfer to anyone .5M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3, {from: investor}).should.be.fulfilled);
+                    logger.debug("investor transfer to anyone 1M TMTG right away : " + await tmtgFinal.transfer(investor2, amt3 * 2, {from: investor}).should.be.rejected);
+                    logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
+                    logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
+
+
+                    //logger.debug("superInvestor transfer to investor 5M TMTG : " + await tmtgFinal.transfer(investor, amt2, {from: superInvestor}));
+                    logger.debug("superInvestor : " + await tmtgFinal.balanceOf(superInvestor)/(10**18));
+                    logger.debug("owner : " + await tmtgFinal.balanceOf(owner)/(10**18));
+                    logger.debug("owner : " + await tmtgFinal.balanceOf(owner));
+                    logger.debug("superInvestor2 : " + await tmtgFinal.balanceOf(superInvestor2)/(10**18));
+                    logger.debug("investor : " + await tmtgFinal.balanceOf(investor)/(10**18));
+                    logger.debug("investor2 : " + await tmtgFinal.balanceOf(investor2)/(10**18));
+                    logger.debug("anony : " + await tmtgFinal.balanceOf(anonymous)/(10**18));
+                    logger.debug("anjony2 : " + await tmtgFinal.balanceOf(anonymous2)/(10**18));
+                    logger.debug("cex1 : " + await tmtgFinal.balanceOf(cex1)/(10**18));
+                    logger.debug("cex2 : " + await tmtgFinal.balanceOf(cex2)/(10**18));
+                    logger.debug("newOwner : " + await tmtgFinal.balanceOf(newOwner)/(10**18));
+                })
+            })
+
+            })
         }
     }
 }
