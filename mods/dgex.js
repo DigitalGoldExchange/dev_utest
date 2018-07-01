@@ -492,7 +492,6 @@ module.exports = {
 */
             describe('4. tokenLock test', () => {
                 it('4-1', async function(){
-                    let openingTime = Math.floor(new Date().getTime() / 1000)
                     let monthInSeconds = 2.678e+6;
                     let amt = new BigNumber(1e+25);
                     let amt2 = new BigNumber(5e+24);
