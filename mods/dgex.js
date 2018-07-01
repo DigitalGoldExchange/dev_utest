@@ -525,7 +525,6 @@ module.exports = {
                     logger.debug("investor2 approves to anyone .5M TMTG right away : " + await tmtgFinal.approve(investor, amt3, {from: investor2}).should.be.fulfilled);
                     logger.debug("investor2 approves to anyone 1M TMTG right away : " + await tmtgFinal.approve(investor, amt3 * 2, {from: investor2}).should.be.rejected);
 
-
                     timeTravel(monthInSeconds); // Oct
 
                     logger.debug("6. get limit period : " + assert.equal(await tmtgFinal.getLimitPeriod(), 3));
